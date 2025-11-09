@@ -1,0 +1,15 @@
+CHIP Clock {
+    IN period[16], reset;
+    OUT ticks[16], loop;
+
+    PARTS:
+    Inc16(in=value, out=updateTicks);
+    Not16(in=updateTicks, out=notTicks);
+    Add16(a=notTicks, b=period, out[15]=lastBit);
+
+    Or(a=lastBit, b=reset, out=isReset);
+    Mux16(a=updateTicks, b=false, sel=isReset, out=out);
+    Register(in=out, load=true, out=ticks, out=value);
+
+    DFF(in=isReset, out=loop);
+}

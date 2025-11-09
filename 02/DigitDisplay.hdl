@@ -1,0 +1,153 @@
+// 7-segments digit display
+//    a
+//   ---
+// f| g |b
+//   ---
+// e|   |c
+//   ---
+//    d
+CHIP DigitDisplay {
+    IN in[4];
+    OUT a, b, c, d, e, f, g;
+    PARTS:
+
+    // a | 1 0 1 1 0 1 1 1 1 1 1 0 1 0 1 1
+    Mux(sel=in[0], a=true, b=false, out=a01);
+    Mux(sel=in[0], a=true, b=true, out=a23);
+    Mux(sel=in[0], a=false, b=true, out=a45);
+    Mux(sel=in[0], a=true, b=true, out=a67);
+    Mux(sel=in[0], a=true, b=true, out=a89);
+    Mux(sel=in[0], a=true, b=false, out=aab);
+    Mux(sel=in[0], a=true, b=false, out=acd);
+    Mux(sel=in[0], a=true, b=true, out=aef);
+
+    Mux(sel=in[1], a=a01, b=a23, out=a03);
+    Mux(sel=in[1], a=a45, b=a67, out=a47);
+    Mux(sel=in[1], a=a89, b=aab, out=a8b);
+    Mux(sel=in[1], a=acd, b=aef, out=acf);
+
+    Mux(sel=in[2], a=a03, b=a47, out=a07);
+    Mux(sel=in[2], a=a8b, b=acf, out=a8f);
+    
+    Mux(sel=in[3], a=a07, b=a8f, out=a);
+
+    // b | 1 1 1 1 1 0 0 1 1 1 1 0 0 1 0 0
+    Mux(sel=in[0], a=true, b=true, out=b01);
+    Mux(sel=in[0], a=true, b=true, out=b23);
+    Mux(sel=in[0], a=true, b=false, out=b45);
+    Mux(sel=in[0], a=false, b=true, out=b67);
+    Mux(sel=in[0], a=true, b=true, out=b89);
+    Mux(sel=in[0], a=true, b=false, out=bab);
+    Mux(sel=in[0], a=false, b=true, out=bcd);
+    Mux(sel=in[0], a=false, b=false, out=bef);
+
+    Mux(sel=in[1], a=b01, b=b23, out=b03);
+    Mux(sel=in[1], a=b45, b=b67, out=b47);
+    Mux(sel=in[1], a=b89, b=bab, out=b8b);
+    Mux(sel=in[1], a=bcd, b=bef, out=bcf);
+
+    Mux(sel=in[2], a=b03, b=b47, out=b07);
+    Mux(sel=in[2], a=b8b, b=bcf, out=b8f);
+    
+    Mux(sel=in[3], a=b07, b=b8f, out=b);
+
+    // c | 1 1 0 1 1 1 1 1 1 1 1 1 0 1 0 0
+    Mux(sel=in[0], a=true, b=true, out=c01);
+    Mux(sel=in[0], a=false, b=true, out=c23);
+    Mux(sel=in[0], a=true, b=true, out=c45);
+    Mux(sel=in[0], a=true, b=true, out=c67);
+    Mux(sel=in[0], a=true, b=true, out=c89);
+    Mux(sel=in[0], a=true, b=true, out=cab);
+    Mux(sel=in[0], a=false, b=true, out=ccd);
+    Mux(sel=in[0], a=false, b=false, out=cef);
+
+    Mux(sel=in[1], a=c01, b=c23, out=c03);
+    Mux(sel=in[1], a=c45, b=c67, out=c47);
+    Mux(sel=in[1], a=c89, b=cab, out=c8b);
+    Mux(sel=in[1], a=ccd, b=cef, out=ccf);
+
+    Mux(sel=in[2], a=c03, b=c47, out=c07);
+    Mux(sel=in[2], a=c8b, b=ccf, out=c8f);
+    
+    Mux(sel=in[3], a=c07, b=c8f, out=c);
+
+    // d | 1 0 1 1 0 1 1 0 1 1 0 1 1 1 1 0
+    Mux(sel=in[0], a=true, b=false, out=d01);
+    Mux(sel=in[0], a=true, b=true, out=d23);
+    Mux(sel=in[0], a=false, b=true, out=d45);
+    Mux(sel=in[0], a=true, b=false, out=d67);
+    Mux(sel=in[0], a=true, b=true, out=d89);
+    Mux(sel=in[0], a=false, b=true, out=dab);
+    Mux(sel=in[0], a=true, b=true, out=dcd);
+    Mux(sel=in[0], a=true, b=false, out=def);
+
+    Mux(sel=in[1], a=d01, b=d23, out=d03);
+    Mux(sel=in[1], a=d45, b=d67, out=d47);
+    Mux(sel=in[1], a=d89, b=dab, out=d8b);
+    Mux(sel=in[1], a=dcd, b=def, out=dcf);
+
+    Mux(sel=in[2], a=d03, b=d47, out=d07);
+    Mux(sel=in[2], a=d8b, b=dcf, out=d8f);
+    
+    Mux(sel=in[3], a=d07, b=d8f, out=d);
+
+    // e | 1 0 1 0 0 0 1 0 1 0 1 1 1 1 1 1
+    Mux(sel=in[0], a=true, b=false, out=e01);
+    Mux(sel=in[0], a=true, b=false, out=e23);
+    Mux(sel=in[0], a=false, b=false, out=e45);
+    Mux(sel=in[0], a=true, b=false, out=e67);
+    Mux(sel=in[0], a=true, b=false, out=e89);
+    Mux(sel=in[0], a=true, b=true, out=eab);
+    Mux(sel=in[0], a=true, b=true, out=ecd);
+    Mux(sel=in[0], a=true, b=true, out=eef);
+
+    Mux(sel=in[1], a=e01, b=e23, out=e03);
+    Mux(sel=in[1], a=e45, b=e67, out=e47);
+    Mux(sel=in[1], a=e89, b=eab, out=e8b);
+    Mux(sel=in[1], a=ecd, b=eef, out=ecf);
+
+    Mux(sel=in[2], a=e03, b=e47, out=e07);
+    Mux(sel=in[2], a=e8b, b=ecf, out=e8f);
+    
+    Mux(sel=in[3], a=e07, b=e8f, out=e);
+
+    // f | 1 0 0 0 1 1 1 0 1 1 1 1 1 0 1 1
+    Mux(sel=in[0], a=true, b=false, out=f01);
+    Mux(sel=in[0], a=false, b=false, out=f23);
+    Mux(sel=in[0], a=true, b=true, out=f45);
+    Mux(sel=in[0], a=true, b=false, out=f67);
+    Mux(sel=in[0], a=true, b=true, out=f89);
+    Mux(sel=in[0], a=true, b=true, out=fab);
+    Mux(sel=in[0], a=true, b=false, out=fcd);
+    Mux(sel=in[0], a=true, b=true, out=fef);
+
+    Mux(sel=in[1], a=f01, b=f23, out=f03);
+    Mux(sel=in[1], a=f45, b=f67, out=f47);
+    Mux(sel=in[1], a=f89, b=fab, out=f8b);
+    Mux(sel=in[1], a=fcd, b=fef, out=fcf);
+
+    Mux(sel=in[2], a=f03, b=f47, out=f07);
+    Mux(sel=in[2], a=f8b, b=fcf, out=f8f);
+    
+    Mux(sel=in[3], a=f07, b=f8f, out=f);
+
+    // g | 0 0 1 1 1 1 1 0 1 1 1 1 0 1 1 1
+    Mux(sel=in[0], a=false, b=false, out=g01);
+    Mux(sel=in[0], a=true, b=true, out=g23);
+    Mux(sel=in[0], a=true, b=true, out=g45);
+    Mux(sel=in[0], a=true, b=false, out=g67);
+    Mux(sel=in[0], a=true, b=true, out=g89);
+    Mux(sel=in[0], a=true, b=true, out=gab);
+    Mux(sel=in[0], a=false, b=true, out=gcd);
+    Mux(sel=in[0], a=true, b=true, out=gef);
+
+    Mux(sel=in[1], a=g01, b=g23, out=g03);
+    Mux(sel=in[1], a=g45, b=g67, out=g47);
+    Mux(sel=in[1], a=g89, b=gab, out=g8b);
+    Mux(sel=in[1], a=gcd, b=gef, out=gcf);
+
+    Mux(sel=in[2], a=g03, b=g47, out=g07);
+    Mux(sel=in[2], a=g8b, b=gcf, out=g8f);
+    
+    Mux(sel=in[3], a=g07, b=g8f, out=g);
+}
