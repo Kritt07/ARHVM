@@ -39,5 +39,37 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    Not(in=instruction[15], out=Ainstruction);
+
+    And(a=instruction[15], b=instruction[5], out=cInstAndDestA);
+    Mux16(a=instruction, b=aluOutput, sel=cInstAndDestA, out=firstMuxOutput);
+    // выбираем выход из alu, только если это С интсрукция и запись в рег A
+
+    Or(a=Ainstruction, b=cInstAndDestA, out=loadA);
+    //запись только если это A интсрукция или это бит записи A в C инструкции
+    ARegister(in=firstMuxOutput, load=loadA, out=regA, out[0..14]=addressM);
+    // запись в рег A
+    Mux16(a=regA, b=inM, sel=instruction[12], out=AMoutput);
+    // выбор, что пойдет на первый вход в ALU
+
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=aluOutput, load=loadD, out=regD);
+    //запись в рег D если это C инструкция и бит записи D
+
+    ALU(x=regD, y=AMoutput, zx=instruction[11], nx=instruction[10],
+    zy=instruction[9], ny=instruction[8], f=instruction[7],
+    no=instruction[6], out=aluOutput, out=outM, zr=ZRout, ng=NGout);
+
+    And(a=instruction[15], b=instruction[3], out=writeM);
+    // записываем новое значение в память данных, если это c инструкция и бит записи M
+
+    And(a=ZRout, b=instruction[1], out=JEQ);
+    And(a=NGout, b=instruction[2], out=JLT);
+    Or(a=JEQ, b=JLT, out=JLE);
+    Not(in=JLE, out=JGT);
+    And(a=instruction[0], b=JGT, out=JGE);
+    Or(a=JGE, b=JLE, out=JMP);
+
+    And(a=instruction[15], b=JMP, out=loadPC);
+    PC(in=regA, load=loadPC, inc=true, reset=reset, out[0..14]=pc);
 }
