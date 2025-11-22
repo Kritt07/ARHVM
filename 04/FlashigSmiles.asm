@@ -7,7 +7,7 @@
 // Если нажатие одной кнопки курсора моментально сменилось на нажатие другой кнопки курсора, то рисовать нужно только один смайл.
 // нужный регистр вычисляется по формуле RAM = [SCREEN + 32*row + col//16] (SCREEN = 16384)
 
-// CURRENT_OFFSET and PREVIOUS_OFFSET == top*32 + left/16
+// currentOffset and previousOffset == top*32 + left/16
 
 
 (LOOP)
@@ -28,10 +28,11 @@
     D=D-1
     D;JEQ
     // если не была нажата клавиша, обнуляем текущую позицию
-    @CURRENT_OFFSET
+    @currentOffset
+
     M=0
     // стираем, если не была нажата клавиша, и при этом ранее был отрисован смайл
-    @PREVIOUS_OFFSET
+    @previousOffset
     D=M
     @CLEAR
     D;JNE
@@ -43,7 +44,8 @@
 (LEFT)
     @3978
     D=A
-    @CURRENT_OFFSET
+    @currentOffset
+
     M=D
     @THERE_SMILEY
     0;JMP
@@ -51,7 +53,8 @@
 (UP)
     @2640
     D=A
-    @CURRENT_OFFSET
+    @currentOffset
+
     M=D
     @THERE_SMILEY
     0;JMP
@@ -59,7 +62,8 @@
 (RIGHT)
     @3989
     D=A
-    @CURRENT_OFFSET
+    @currentOffset
+
     M=D
     @THERE_SMILEY
     0;JMP
@@ -67,16 +71,18 @@
 (DOWN)
     @5296
     D=A
-    @CURRENT_OFFSET
+    @currentOffset
+
     M=D
     @THERE_SMILEY
     0;JMP
 
 (THERE_SMILEY)
     // проверка текущих координат смайла с прошлыми
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
-    @PREVIOUS_OFFSET
+    @previousOffset
     D=D-M
     @LOOP
     D;JEQ
@@ -86,7 +92,7 @@
 
 (CLEAR)
     // стирание смайла по предыдущим координатам
-    @PREVIOUS_OFFSET
+    @previousOffset
     D=M
 
     @16384
@@ -114,11 +120,12 @@
     M = 0
 
     // обнуление предыдущего значения
-    @PREVIOUS_OFFSET
+    @previousOffset
     M=0
 
-    // если клавиша не не была нажата, то cuurent__offset = 0 и тогда идем обратно в начальный цикл
-    @CURRENT_OFFSET
+    // если клавиша не не была нажата, то cuurentOffset = 0 и тогда идем обратно в начальный цикл
+    @currentOffset
+
     D=M
     @LOOP
     D;JEQ
@@ -127,8 +134,10 @@
     0;JMP
 
 (PAINT)
-    // рисуем смайл со смещением CURRENT_OFFSET
-    @CURRENT_OFFSET
+    // рисуем смайл со смещением currentOffset
+
+    @currentOffset
+
     D=M
     @16384
     D = D+A
@@ -140,7 +149,8 @@
     A=M
     M = D
 
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
     @16416
     D = D+A
@@ -152,7 +162,8 @@
     A=M
     M = D
 
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
     @16448
     D = D+A
@@ -164,7 +175,8 @@
     A=M
     M = D
 
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
     @16544
     D = D+A
@@ -176,7 +188,8 @@
     A=M
     M = D
 
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
     @16576
     D = D+A
@@ -188,7 +201,8 @@
     A=M
     M = D
 
-    @CURRENT_OFFSET
+    @currentOffset
+
     D=M
     @16608
     D = D+A
@@ -200,10 +214,11 @@
     A=M
     M = D
 
-    // обновление PREVIOUS_OFFSET
-    @CURRENT_OFFSET
+    // обновление previousOffset
+    @currentOffset
+
     D=M
-    @PREVIOUS_OFFSET
+    @previousOffset
     M=D
 
     @LOOP
