@@ -42,12 +42,12 @@ CHIP CPU {
     Not(in=instruction[15], out=Ainstruction);
 
     And(a=instruction[15], b=instruction[5], out=cInstAndDestA);
-    Mux16(a=instruction, b=aluOutput, sel=cInstAndDestA, out=firstMuxOutput);
+    Mux16(a=instruction, b=aluOutput, sel=cInstAndDestA, out=regAin);
     // выбираем выход из alu, только если это С интсрукция и запись в рег A
 
     Or(a=Ainstruction, b=cInstAndDestA, out=loadA);
     //запись только если это A интсрукция или это бит записи A в C инструкции
-    ARegister(in=firstMuxOutput, load=loadA, out=regA, out[0..14]=addressM);
+    ARegister(in=regAin, load=loadA, out=regA, out[0..14]=addressM);
     // запись в рег A
     Mux16(a=regA, b=inM, sel=instruction[12], out=AMoutput);
     // выбор, что пойдет на первый вход в ALU
@@ -66,10 +66,13 @@ CHIP CPU {
     And(a=ZRout, b=instruction[1], out=JEQ);
     And(a=NGout, b=instruction[2], out=JLT);
     Or(a=JEQ, b=JLT, out=JLE);
-    Not(in=JLE, out=JGT);
-    And(a=instruction[0], b=JGT, out=JGE);
-    Or(a=JGE, b=JLE, out=JMP);
+    Or(a=ZRout, b=NGout, out=ZRorNG);
 
+    Not(in=ZRorNG, out=positive);
+    And(a=instruction[0], b=positive, out=JGT);
+    Or(a=JEQ, b=JGT, out=JGE);
+
+    Or(a=JLE, b=JGT, out=JMP);
     And(a=instruction[15], b=JMP, out=loadPC);
     PC(in=regA, load=loadPC, inc=true, reset=reset, out[0..14]=pc);
 }
