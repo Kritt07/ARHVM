@@ -4,4 +4,33 @@ CHIP Memory20K {
 
     PARTS:
     // Put your code here:
+    // 0 - 0000 0000 0000 0000 - номер первого регистра памяти данных
+    // 16383 - 0011 1111 1111 1111 - номер последнего регистра памяти данных
+
+    // 16384 - 0100 0000 0000 0000 - номер первого регистра памяти дисплея
+    // 24575 - 0101 1111 1111 1111 - номер последнего регистра памяти дисплея
+
+    // 24576 - 0110 0000 0000 0000 - номер регистра клавиатуры
+
+    // 28672 - 0111 0000 0000 0000 - номенр первого регистра доп памяти
+    // 32767 - 0111 1111 1111 1111 - номер последнего регистра доп памяти
+
+    // теперь нужную секцию памяти можно определить по трем битам адреса - 12-ый, 13-ый и 14-ый
+    // 000, 001, 010, 011 - указатель для ram16k
+    // 100, 101 - указатель для screen
+    // 110 - указатель для kbd
+    // 111 - указатель для доп памяти
+
+    DMux(in=load, sel=address[14], a=loadRAM16k, b=load3next);
+    DMux(in=load3next, sel=address[13], a=loadSCREEN, b=load2next);
+    DMux(in=load2next, sel=address[12], a=loadKBD, b=loadRAM4k);
+
+    RAM16K(in=in, load=loadRAM16k, address=address[0..13], out=outRAM16k);
+    Screen(in=in, load=loadSCREEN, address=address[0..12], out=outSCREEN);
+    Keyboard(out=outKBD);
+    RAM4K(in=in, load=loadRAM4k, address=address[0..11], out=outRAM4k);
+
+    Mux16(a=outKBD, b=outRAM4k, sel=address[12], out=firstOut);
+    Mux16(a=outSCREEN, b=firstOut, sel=address[13], out=secondOut);
+    Mux16(a=outRAM16k, b=secondOut, sel=address[14], out=out);
 }
