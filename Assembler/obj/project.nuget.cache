@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Zf4vhox2FO8=",
+  "dgSpecHash": "hSL7GVa7PHs=",
   "success": true,
-  "projectFilePath": "C:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
+  "projectFilePath": "c:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Kritt\\.nuget\\packages\\microsoft.codecoverage\\17.0.0\\microsoft.codecoverage.17.0.0.nupkg.sha512",
     "C:\\Users\\Kritt\\.nuget\\packages\\microsoft.csharp\\4.0.1\\microsoft.csharp.4.0.1.nupkg.sha512",

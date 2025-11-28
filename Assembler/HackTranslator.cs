@@ -141,7 +141,6 @@ namespace Assembler
                 comp = comp.Replace('M', 'A');
             }
 
-
             foreach (var line in compToBinary)
             {
                 if (line.Key == comp)
@@ -152,8 +151,7 @@ namespace Assembler
 
         public static void ParseDest(string dest, int[] result)
         {
-            
-            var destToBinory = new Dictionary<string, int[]>()
+            var destToBinary = new Dictionary<string, int[]>()
             {
                 {"", new[] {0, 0, 0}},
                 {"M", new[] {0, 0, 1}},
@@ -165,7 +163,7 @@ namespace Assembler
                 {"AMD", new[] {1, 1, 1}}
             };
 
-            foreach (var line in destToBinory)
+            foreach (var line in destToBinary)
                 if (line.Key == dest)
                     for (var i = 0; i < 3; i++)
                         result[i + 10] = line.Value[i];
@@ -173,8 +171,7 @@ namespace Assembler
 
         public static void ParseJump(string jump, int[] result)
         {
-
-            var jumpToBinory = new Dictionary<string, int[]>()
+            var jumpToBinary = new Dictionary<string, int[]>()
             {
                 {"", new[] {0, 0, 0}},
                 {"JGT", new[] {0, 0, 1}},
@@ -186,7 +183,7 @@ namespace Assembler
                 {"JMP", new[] {1, 1, 1}}
             };
 
-            foreach (var line in jumpToBinory)
+            foreach (var line in jumpToBinary)
                 if (line.Key == jump)
                     for (var i = 0; i < 3; i++)
                         result[i + 13] = line.Value[i];
