@@ -77,17 +77,19 @@ namespace Assembler
         public static string[] ParseInstruction(string input)
         {
             string[] result = new string[3] { "", "", "" };
-            string[] equalParts = input.Split('=', 2);
-            string[] semicolonParts = input.Split(';', 2);
             
             if (string.IsNullOrEmpty(input))
                 return result;
 
+            string[] equalParts = input.Split('=', 2);
+            
             if (equalParts.Length == 2)
             {
                 result[0] = equalParts[0]; // dest
                 input = equalParts[1];     // comp;jump или comp
             }
+
+            string[] semicolonParts = input.Split(';', 2);
             
             if (semicolonParts.Length == 2)
             {
