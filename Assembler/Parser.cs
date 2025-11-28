@@ -9,7 +9,28 @@ namespace Assembler
         /// <returns>Только значащие строки строки ассемблерного кода без комментариев и лишних пробелов</returns>
         public string[] RemoveWhitespacesAndComments(string[] asmLines)
         {
-            return new string[0];
+            var result = new List<string>();
+
+            foreach (var line in asmLines)
+            {
+                if (line == null)
+                    continue;
+                
+                var commentIndex = line.IndexOf("//");
+                var noComment = commentIndex >= 0 ? line.Substring(0, commentIndex) : line;
+
+                var trimmed = noComment.Trim();
+
+                while (trimmed.Contains(" "))
+                    trimmed = trimmed.Replace(" ", "");
+                
+                if (trimmed == "")
+                    continue;
+                
+                result.Add(trimmed);
+            }
+
+            return result.ToArray();
         }
     }
 }
