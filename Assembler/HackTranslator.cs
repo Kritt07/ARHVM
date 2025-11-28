@@ -8,10 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Assembler
 {
-
     public class HackTranslator
     {
-        public int currentMaxVariableAddress = 16;
+        public int CurrentMaxVariableAddress = 16;
         /// <summary>
         /// Транслирует инструкции ассемблерного кода (без меток) в бинарное представление.
         /// </summary>
@@ -38,7 +37,6 @@ namespace Assembler
         /// </summary>
         /// <param name="aInstruction">Ассемблерная A-инструкция, например, @42 или @SCREEN</param>
         /// <param name="symbolTable">Таблица символов</param>
-        /// <returns>Строка, содержащее нули и единицы — бинарное представление ассемблерной инструкции, например, "0000000000000101"</returns>
         public string AInstructionToCode(string aInstruction, Dictionary<string, int> symbolTable)
         {
             var address = aInstruction.Substring(1);
@@ -48,13 +46,11 @@ namespace Assembler
 
             if (int.TryParse(address, out var num))
                 return Convert.ToString(num, 2).PadLeft(16, '0');
-            else
-            {
-                var maxVariablesValue = currentMaxVariableAddress;
-                symbolTable.Add(address, maxVariablesValue);
-                currentMaxVariableAddress++;
-                return Convert.ToString(maxVariablesValue, 2).PadLeft(16, '0');
-            }
+
+            var maxVariablesValue = CurrentMaxVariableAddress;
+            symbolTable.Add(address, maxVariablesValue);
+            CurrentMaxVariableAddress++;
+            return Convert.ToString(maxVariablesValue, 2).PadLeft(16, '0');
         }
 
         /// <summary>
@@ -81,21 +77,17 @@ namespace Assembler
         public static string[] ParseInstruction(string input)
         {
             string[] result = new string[3] { "", "", "" };
+            string[] equalParts = input.Split('=', 2);
+            string[] semicolonParts = input.Split(';', 2);
             
             if (string.IsNullOrEmpty(input))
                 return result;
 
-            // Разделяем по =
-            string[] equalParts = input.Split('=', 2);
-            
             if (equalParts.Length == 2)
             {
                 result[0] = equalParts[0]; // dest
                 input = equalParts[1];     // comp;jump или comp
             }
-
-            // Разделяем оставшуюся часть по ;
-            string[] semicolonParts = input.Split(';', 2);
             
             if (semicolonParts.Length == 2)
             {
@@ -115,24 +107,15 @@ namespace Assembler
         {
             var compToBinary = new Dictionary<string, int[]>()
             {
-                {"0", new[] {1, 0, 1, 0, 1, 0}},
-                {"1", new[] {1, 1, 1, 1, 1, 1}},
-                {"-1", new[] {1, 1, 1, 0, 1, 0}},
-                {"D", new[] {0, 0, 1, 1, 0, 0}},
-                {"A", new[] {1, 1, 0, 0, 0, 0}},
-                {"!D", new[] {0, 0, 1, 1, 0, 1}},
-                {"!A", new[] {1, 1, 0, 0, 0, 1}},
-                {"-D", new[] {0, 0, 1, 1, 1, 1}},
-                {"-A", new[] {1, 1, 0, 0, 1, 1}},
-                {"D+1", new[] {0, 1, 1, 1, 1, 1}},
-                {"A+1", new[] {1, 1, 0, 1, 1, 1}},
-                {"D-1", new[] {0, 0, 1, 1, 1, 0}},
-                {"A-1", new[] {1, 1, 0, 0, 1, 0}},
-                {"D+A", new[] {0, 0, 0, 0, 1, 0}},
-                {"D-A", new[] {0, 1, 0, 0, 1, 1}},
-                {"A-D", new[] {0, 0, 0, 1, 1, 1}},
-                {"D&A", new[] {0, 0, 0, 0, 0, 0}},
-                {"D|A", new[] {0, 1, 0, 1, 0, 1}}
+                {"0", new[] {1, 0, 1, 0, 1, 0}}, {"1", new[] {1, 1, 1, 1, 1, 1}},
+                {"-1", new[] {1, 1, 1, 0, 1, 0}}, {"D", new[] {0, 0, 1, 1, 0, 0}},
+                {"A", new[] {1, 1, 0, 0, 0, 0}}, {"!D", new[] {0, 0, 1, 1, 0, 1}},
+                {"!A", new[] {1, 1, 0, 0, 0, 1}}, {"-D", new[] {0, 0, 1, 1, 1, 1}},
+                {"-A", new[] {1, 1, 0, 0, 1, 1}}, {"D+1", new[] {0, 1, 1, 1, 1, 1}},
+                {"A+1", new[] {1, 1, 0, 1, 1, 1}}, {"D-1", new[] {0, 0, 1, 1, 1, 0}},
+                {"A-1", new[] {1, 1, 0, 0, 1, 0}}, {"D+A", new[] {0, 0, 0, 0, 1, 0}},
+                {"D-A", new[] {0, 1, 0, 0, 1, 1}}, {"A-D", new[] {0, 0, 0, 1, 1, 1}},
+                {"D&A", new[] {0, 0, 0, 0, 0, 0}}, {"D|A", new[] {0, 1, 0, 1, 0, 1}}
             };
 
             if (comp.Contains('M'))
