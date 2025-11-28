@@ -11,6 +11,7 @@ namespace Assembler
 
     public class HackTranslator
     {
+        public int currentMaxVariableAddress = 16;
         /// <summary>
         /// Транслирует инструкции ассемблерного кода (без меток) в бинарное представление.
         /// </summary>
@@ -20,10 +21,16 @@ namespace Assembler
         /// <exception cref="FormatException">Ошибка трансляции</exception>
         public string[] TranslateAsmToHack(string[] instructions, Dictionary<string, int> symbolTable)
         {
+            var result = new List<string>();
+            foreach (var line in instructions)
+            {
+                if (line[0] == '@')
+                    result.Add(AInstructionToCode(line, symbolTable));
+                else
+                    result.Add(CInstructionToCode(line));
+            }
 
-
-            throw new NotImplementedException();
-
+            return result.ToArray();
         }
 
         /// <summary>
@@ -34,20 +41,19 @@ namespace Assembler
         /// <returns>Строка, содержащее нули и единицы — бинарное представление ассемблерной инструкции, например, "0000000000000101"</returns>
         public string AInstructionToCode(string aInstruction, Dictionary<string, int> symbolTable)
         {
-            var value = aInstruction.Substring(1, aInstruction.Length - 1);
+            var address = aInstruction.Substring(1);
 
-            if (int.TryParse(value, out var num))
+            if (symbolTable.ContainsKey(address))
+                return Convert.ToString(symbolTable[address], 2).PadLeft(16, '0');
+
+            if (int.TryParse(address, out var num))
                 return Convert.ToString(num, 2).PadLeft(16, '0');
             else
             {
-                if (symbolTable.ContainsKey(value))
-                    return Convert.ToString(symbolTable[value], 2).PadLeft(16, '0');
-                else
-                {
-                    var lastValue = symbolTable.Last().Value;
-                    symbolTable.Add(value, lastValue + 1);
-                    return Convert.ToString(lastValue + 1, 2).PadLeft(16, '0');
-                }
+                var maxVariablesValue = currentMaxVariableAddress;
+                symbolTable.Add(address, maxVariablesValue);
+                currentMaxVariableAddress++;
+                return Convert.ToString(maxVariablesValue, 2).PadLeft(16, '0');
             }
         }
 
@@ -58,63 +64,95 @@ namespace Assembler
         /// <returns>Строка, содержащее нули и единицы — бинарное представление ассемблерной инструкции, например, "1111000010100000"</returns>
         public string CInstructionToCode(string cInstruction)
         {
-            var result = new int[15] {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            var result = new int[16] {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-            var destCompJumpArray = cInstruction.Split('=', ';');
+            var destCompJumpArray = ParseInstruction(cInstruction);
             var dest = destCompJumpArray[0];
             var comp = destCompJumpArray[1];
-            var jump = destCompJumpArray.Length > 2 ? destCompJumpArray[2] : "";
+            var jump = destCompJumpArray[2];
 
             ParseDest(dest, result);
             ParseCamp(comp, result);
             ParseJump(jump, result);
 
-            return String.Join();
+            return String.Join("", result);
+        }
+
+        public static string[] ParseInstruction(string input)
+        {
+            string[] result = new string[3] { "", "", "" };
+            
+            if (string.IsNullOrEmpty(input))
+                return result;
+
+            // Разделяем по =
+            string[] equalParts = input.Split('=', 2);
+            
+            if (equalParts.Length == 2)
+            {
+                result[0] = equalParts[0]; // dest
+                input = equalParts[1];     // comp;jump или comp
+            }
+
+            // Разделяем оставшуюся часть по ;
+            string[] semicolonParts = input.Split(';', 2);
+            
+            if (semicolonParts.Length == 2)
+            {
+                result[1] = semicolonParts[0]; // comp
+                result[2] = semicolonParts[1]; // jump
+            }
+            else
+            {
+                result[1] = semicolonParts[0]; // comp
+                result[2] = "";               // jump пустой
+            }
+
+            return result;
         }
 
         public static void ParseCamp(string comp, int[] result)
         {
-            var aluInstruction = new int[6];
-
             var compToBinary = new Dictionary<string, int[]>()
             {
-                {"0", new[] {0, 1, 0, 1, 0, 1}},
+                {"0", new[] {1, 0, 1, 0, 1, 0}},
                 {"1", new[] {1, 1, 1, 1, 1, 1}},
-                {"-1", new[] {0, 1, 0, 1, 1, 1}},
+                {"-1", new[] {1, 1, 1, 0, 1, 0}},
                 {"D", new[] {0, 0, 1, 1, 0, 0}},
-                {"A", new[] {0, 0, 0, 0, 1, 1}},
-                {"!D", new[] {1, 0, 1, 1, 0, 0,}},
-                {"!A", new[] {1, 0, 0, 0, 1, 1}},
-                {"-D", new[] {1, 1, 1, 1, 0, 0}},
+                {"A", new[] {1, 1, 0, 0, 0, 0}},
+                {"!D", new[] {0, 0, 1, 1, 0, 1}},
+                {"!A", new[] {1, 1, 0, 0, 0, 1}},
+                {"-D", new[] {0, 0, 1, 1, 1, 1}},
                 {"-A", new[] {1, 1, 0, 0, 1, 1}},
-                {"D+1", new[] {1, 1, 1, 1, 1, 0}},
-                {"A+1", new[] {1, 1, 1, 0, 0, 1}},
-                {"D-1", new[] {0, 1, 1, 1, 0, 0}},
-                {"A-1", new[] {0, 1, 0, 0, 1, 1}},
-                {"D+A", new[] {0, 1, 0, 0, 0, 0}},
-                {"D-A", new[] {1, 1, 0, 0, 1, 0}},
-                {"A-D", new[] {1, 1, 1, 0, 0, 0}},
+                {"D+1", new[] {0, 1, 1, 1, 1, 1}},
+                {"A+1", new[] {1, 1, 0, 1, 1, 1}},
+                {"D-1", new[] {0, 0, 1, 1, 1, 0}},
+                {"A-1", new[] {1, 1, 0, 0, 1, 0}},
+                {"D+A", new[] {0, 0, 0, 0, 1, 0}},
+                {"D-A", new[] {0, 1, 0, 0, 1, 1}},
+                {"A-D", new[] {0, 0, 0, 1, 1, 1}},
                 {"D&A", new[] {0, 0, 0, 0, 0, 0}},
-                {"D|A", new[] {1, 0, 1, 0, 1, 0}}
+                {"D|A", new[] {0, 1, 0, 1, 0, 1}}
             };
 
             if (comp.Contains('M'))
             {
-                result[12] = 1; 
-                comp.Replace('M', 'A');
+                result[3] = 1; 
+                comp = comp.Replace('M', 'A');
             }
 
-            foreach (var line in compToBinary)
-                if (line.Key == comp)
-                    aluInstruction = line.Value;
 
-            for (var i = 0; i < 6; i++)
-                result[i + 6] = aluInstruction[0];
+            foreach (var line in compToBinary)
+            {
+                if (line.Key == comp)
+                    for (var i = 0; i < 6; i++)
+                        result[i + 4] = line.Value[i];
+            }
         }
 
         public static void ParseDest(string dest, int[] result)
         {
-
+            
             var destToBinory = new Dictionary<string, int[]>()
             {
                 {"", new[] {0, 0, 0}},
@@ -130,7 +168,7 @@ namespace Assembler
             foreach (var line in destToBinory)
                 if (line.Key == dest)
                     for (var i = 0; i < 3; i++)
-                        result[i + 3] = line.Value[i];
+                        result[i + 10] = line.Value[i];
         }
 
         public static void ParseJump(string jump, int[] result)
@@ -151,7 +189,7 @@ namespace Assembler
             foreach (var line in jumpToBinory)
                 if (line.Key == jump)
                     for (var i = 0; i < 3; i++)
-                        result[i] = line.Value[i];
+                        result[i + 13] = line.Value[i];
         }
     }
 }
