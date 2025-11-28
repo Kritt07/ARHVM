@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Reflection.Emit;
 
 namespace Assembler
 {
@@ -16,6 +17,8 @@ namespace Assembler
         /// <exception cref="FormatException">Ошибка трансляции</exception>
         public string[] TranslateAsmToHack(string[] instructions, Dictionary<string, int> symbolTable)
         {
+
+
             throw new NotImplementedException();
 
         }
@@ -28,7 +31,21 @@ namespace Assembler
         /// <returns>Строка, содержащее нули и единицы — бинарное представление ассемблерной инструкции, например, "0000000000000101"</returns>
         public string AInstructionToCode(string aInstruction, Dictionary<string, int> symbolTable)
         {
-            throw new NotImplementedException();
+            var value = aInstruction.Substring(1, aInstruction.Length - 1);
+
+            if (int.TryParse(value, out var num))
+                return Convert.ToString(num, 2).PadLeft(16, '0');
+            else
+            {
+                if (symbolTable.ContainsKey(value))
+                    return Convert.ToString(symbolTable[value], 2).PadLeft(16, '0');
+                else
+                {
+                    var lastValue = symbolTable.Last().Value;
+                    symbolTable.Add(value, lastValue + 1);
+                    return Convert.ToString(lastValue + 1, 2).PadLeft(16, '0');
+                }
+            }
         }
 
         /// <summary>

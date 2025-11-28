@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj": {}
+    "C:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj": {}
   },
   "projects": {
-    "c:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj": {
+    "C:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
+        "projectUniqueName": "C:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
         "projectName": "Assembler",
-        "projectPath": "c:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
+        "projectPath": "C:\\TopIt\\ARHVM\\Assembler\\Assembler.csproj",
         "packagesPath": "C:\\Users\\Kritt\\.nuget\\packages\\",
-        "outputPath": "c:\\TopIt\\ARHVM\\Assembler\\obj\\",
+        "outputPath": "C:\\TopIt\\ARHVM\\Assembler\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
